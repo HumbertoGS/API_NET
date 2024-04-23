@@ -61,11 +61,11 @@ namespace API_en_NET.Controllers
         }
 
         [HttpGet]
-        [Route("student/{idPerson:int}")]
+        [Route("student/{id:int}")]
 
-        public IActionResult Consultar(int idPerson)
+        public IActionResult Consultar(int id)
         {
-            Person person = _dbContext.Persons.Find(idPerson);
+            Person person = _dbContext.Persons.Find(id);
 
             if(person == null)
             {
@@ -74,17 +74,37 @@ namespace API_en_NET.Controllers
 
             try
             {
-
-                person = _dbContext.Persons.FirstOrDefault();
-               
-                return StatusCode(StatusCodes.Status200OK, new { mensaje = "Registro encontrado", response = person });
+                return StatusCode(StatusCodes.Status200OK, new { status = 200, message = "Registro encontrado", response = person });
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status200OK, new { mensaje = ex.Message });
+                return StatusCode(StatusCodes.Status200OK, new { message = ex.Message });
             }
 
         }
+
+        [HttpGet]
+        [Route("student/{name}")]
+
+        public IActionResult ConsultarName(string name)
+        {
+            Person person = _dbContext.Persons.FirstOrDefault(p => EF.Functions.Like(p.Name, $"%{name}%"));
+
+            if (person == null)
+            {
+                return BadRequest("Persona no encontrada");
+            }
+
+            try
+            {
+                return StatusCode(StatusCodes.Status200OK, new { status = 200, message = "Registro encontrado", response = person });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status200OK, new { message = ex.Message });
+            }
+        }
+
 
         [HttpPut]
         [Route("student")]
